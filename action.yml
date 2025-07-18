@@ -19,7 +19,7 @@ inputs:
     description: "Name of the feature flag to update"
     required: true
   flag-config:
-    description: "YAML object containing flag configuration (enabled, default_value, conditions, etc.)"
+    description: "YAML object containing flag configuration (enabled, defaultValue, conditions, etc.)"
     required: true
   api-url:
     description: "CloudBees Platform API URL"

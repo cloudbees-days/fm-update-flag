@@ -98,7 +98,7 @@ Update CloudBees Feature Management flag configurations for specific environment
     flag-name: "new-checkout-flow"
     flag-config: |
       enabled: true
-      default_value: true
+      defaultValue: true
       stickiness_property: "rox.distinct_id"
 ----
 
@@ -116,7 +116,7 @@ Update CloudBees Feature Management flag configurations for specific environment
     flag-name: "new-ui-design"
     flag-config: |
       enabled: true
-      default_value:
+      defaultValue:
         - option: true
           percentage: 50
         - option: false
@@ -132,11 +132,11 @@ The `flag-config` input accepts YAML that maps to CloudBees flag configuration:
 ----
 # Basic enable/disable
 enabled: true
-default_value: true
+defaultValue: true
 stickiness_property: "rox.distinct_id"
 
 # Split testing
-default_value:
+defaultValue:
   - option: true
     percentage: 75
   - option: false
@@ -151,7 +151,7 @@ conditions:
     flag_value: true
 
 # Scheduled rollout
-default_value:
+defaultValue:
   - from: "2025-07-17T14:58:00.000Z"
     percentage: 0
   - from: "2025-07-17T15:03:00.000Z"

@@ -1,0 +1,71 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: action
+name: fm-update-flag
+description: "Update CloudBees Feature Management flag configuration"
+inputs:
+  token:
+    description: "CloudBees Feature Management API token"
+    required: true
+  org-id:
+    description: "CloudBees organization ID"
+    required: true
+  application-name:
+    description: "Application name containing the feature flag"
+    required: true
+  environment-name:
+    description: "Environment name where the flag should be configured"
+    required: true
+  flag-name:
+    description: "Name of the feature flag to update"
+    required: true
+  flag-config:
+    description: "YAML object containing flag configuration (enabled, default_value, conditions, etc.)"
+    required: true
+  api-url:
+    description: "CloudBees Platform API URL"
+    default: "https://api.cloudbees.io"
+    required: false
+
+outputs:
+  flag-id:
+    value: ${{ steps.update-flag.outputs.flag-id }}
+    description: "ID of the updated flag"
+  flag-name:
+    value: ${{ steps.update-flag.outputs.flag-name }}
+    description: "Name of the updated flag"
+  application-id:
+    value: ${{ steps.update-flag.outputs.application-id }}
+    description: "ID of the application"
+  application-name:
+    value: ${{ steps.update-flag.outputs.application-name }}
+    description: "Name of the application"
+  environment-id:
+    value: ${{ steps.update-flag.outputs.environment-id }}
+    description: "ID of the environment"
+  environment-name:
+    value: ${{ steps.update-flag.outputs.environment-name }}
+    description: "Name of the environment"
+  configuration:
+    value: ${{ steps.update-flag.outputs.configuration }}
+    description: "JSON representation of the applied configuration"
+  success:
+    value: ${{ steps.update-flag.outputs.success }}
+    description: "Whether the update was successful"
+
+runs:
+  using: composite
+  steps:
+    - name: Update flag configuration
+      id: update-flag
+      uses: docker://ldonleycb/fm-actions:latest
+      shell: sh
+      run: |
+        /app/fm-actions set-flag-config \
+          --token "${{ inputs.token }}" \
+          --org-id "${{ inputs.org-id }}" \
+          --api-url "${{ inputs.api-url }}" \
+          --application-name "${{ inputs.application-name }}" \
+          --environment-name "${{ inputs.environment-name }}" \
+          --flag-name "${{ inputs.flag-name }}" \
+          --config "${{ inputs.flag-config }}" \
+          --verbose

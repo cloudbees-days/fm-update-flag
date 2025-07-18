@@ -1,0 +1,182 @@
+= CloudBees action: Update Feature Management Flag
+
+Update CloudBees Feature Management flag configurations for specific environments. Supports enable/disable, split testing, target groups, and scheduled rollouts.
+
+== Inputs
+
+[cols="2a,2a,2a,5a",options="header"]
+.Input details
+|===
+
+| Input name
+| Data type
+| Required?
+| Description
+
+| `token`
+| String
+| Yes
+| CloudBees Feature Management API token
+
+| `org-id`
+| String
+| Yes
+| CloudBees organization ID
+
+| `application-name`
+| String
+| Yes
+| Name of the application containing the feature flag
+
+| `environment-name`
+| String
+| Yes
+| Name of the environment where the flag should be configured
+
+| `flag-name`
+| String
+| Yes
+| Name of the feature flag to update
+
+| `flag-config`
+| YAML Object
+| Yes
+| YAML object containing flag configuration (converted to JSON for API)
+
+| `api-url`
+| String
+| No
+| CloudBees API base URL. Default is `https://api.cloudbees.io`
+
+|===
+
+== Outputs
+
+[cols="2a,2a,5a",options="header"]
+.Output details
+|===
+
+| Output name
+| Data type
+| Description
+
+| `flag-id`
+| String
+| ID of the updated flag
+
+| `flag-name`
+| String
+| Name of the updated flag
+
+| `environment-id`
+| String
+| ID of the environment
+
+| `configuration`
+| JSON String
+| JSON representation of the applied configuration
+
+| `success`
+| Boolean
+| Whether the update was successful
+
+|===
+
+== Usage Examples
+
+=== Enable/Disable Flag
+
+[source,yaml]
+----
+- name: Enable feature flag
+  uses: https://github.com/cloudbees-days/fm-update-flag@v1
+  with:
+    token: ${{ secrets.CLOUDBEES_API_TOKEN }}
+    org-id: ${{ vars.CLOUDBEES_ORG_ID }}
+    application-name: ${{ vars.APPLICATION_NAME }}
+    environment-name: "production"
+    flag-name: "new-checkout-flow"
+    flag-config: |
+      enabled: true
+      default_value: true
+      stickiness_property: "rox.distinct_id"
+----
+
+=== A/B Split Testing
+
+[source,yaml]
+----
+- name: Setup A/B test
+  uses: https://github.com/cloudbees-days/fm-update-flag@v1
+  with:
+    token: ${{ secrets.CLOUDBEES_API_TOKEN }}
+    org-id: ${{ vars.CLOUDBEES_ORG_ID }}
+    application-name: ${{ vars.APPLICATION_NAME }}
+    environment-name: "production"
+    flag-name: "new-ui-design"
+    flag-config: |
+      enabled: true
+      default_value:
+        - option: true
+          percentage: 50
+        - option: false
+          percentage: 50
+      stickiness_property: "rox.distinct_id"
+----
+
+== Flag Configuration Format
+
+The `flag-config` input accepts YAML that maps to CloudBees flag configuration:
+
+[source,yaml]
+----
+# Basic enable/disable
+enabled: true
+default_value: true
+stickiness_property: "rox.distinct_id"
+
+# Split testing
+default_value:
+  - option: true
+    percentage: 75
+  - option: false
+    percentage: 25
+
+# Target groups
+conditions:
+  - allOf:
+    - anyOf:
+      - group:
+          id: "group-uuid"
+    flag_value: true
+
+# Scheduled rollout
+default_value:
+  - from: "2025-07-17T14:58:00.000Z"
+    percentage: 0
+  - from: "2025-07-17T15:03:00.000Z"
+    percentage: 100
+----
+
+== Setup
+
+=== Authentication
+
+Store your CloudBees Feature Management API token as a secret:
+- `CLOUDBEES_API_TOKEN`: Your Feature Management API token
+
+=== Troubleshooting
+
+**Flag/Environment Not Found**: Verify the flag and environment exist and you have access
+**Invalid Configuration**: Check the flag configuration format matches the expected structure
+**Permission Errors**: Ensure your API token has permission to update flag configurations
+
+== License
+
+This code is made available under the 
+link:https://opensource.org/license/mit/[MIT license].
+
+== References
+
+* link:https://docs.cloudbees.com/docs/cloudbees-platform/latest/api-references/api-flags[CloudBees Platform Flags API]
+* Learn more about link:https://docs.cloudbees.com/docs/cloudbees-saas-platform-actions/latest/[using actions in CloudBees workflows]. 

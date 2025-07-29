@@ -61,7 +61,7 @@ runs:
   steps:
     - name: Update flag configuration
       id: update-flag
-      uses: docker://ldonleycb/fm-actions:latest
+      uses: docker://ldonleycb/fm-actions:25.07.29
       shell: sh
       run: |
         /app/fm-actions set-flag-config \

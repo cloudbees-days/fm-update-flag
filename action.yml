@@ -25,6 +25,10 @@ inputs:
     description: "CloudBees Platform API URL"
     default: "https://api.cloudbees.io"
     required: false
+  use-org-as-app:
+    description: "Use organization ID as application ID for flags API (original mode)"
+    default: "false"
+    required: false
 
 outputs:
   flag-id:
@@ -68,4 +72,5 @@ runs:
           --environment-name "${{ inputs.environment-name }}" \
           --flag-name "${{ inputs.flag-name }}" \
           --config "${{ inputs.flag-config }}" \
+          ${{ inputs.use-org-as-app == 'true' && '--use-org-as-app' || '' }} \
           --verbose
